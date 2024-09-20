@@ -1,0 +1,908 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java善假于物," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="前言不知道大家有没有这样的感觉，在平时开发中，经常有很多dao、service类中存着很多重复的代码，Velocity提供了模板生成工具，今天我教大家怎么和这些大量的重复代码说再见。">
+<meta name="keywords" content="java善假于物">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java善假于物（二）：利用velocity生成模板代码">
+<meta property="og:url" content="http://cppba.com/2016/07/19/java_tool_velocity_template/index.html">
+<meta property="og:site_name" content="大黄蜂的独立博客">
+<meta property="og:description" content="前言不知道大家有没有这样的感觉，在平时开发中，经常有很多dao、service类中存着很多重复的代码，Velocity提供了模板生成工具，今天我教大家怎么和这些大量的重复代码说再见。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.loli.net/2017/08/20/599950fa89f2d.png">
+<meta property="og:image" content="https://i.loli.net/2017/08/20/599950fac1e98.png">
+<meta property="og:updated_time" content="2024-09-20T09:06:19.665Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java善假于物（二）：利用velocity生成模板代码">
+<meta name="twitter:description" content="前言不知道大家有没有这样的感觉，在平时开发中，经常有很多dao、service类中存着很多重复的代码，Velocity提供了模板生成工具，今天我教大家怎么和这些大量的重复代码说再见。">
+<meta name="twitter:image" content="https://i.loli.net/2017/08/20/599950fa89f2d.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://cppba.com/2016/07/19/java_tool_velocity_template/"/>
+
+
+
+
+
+  <title>java善假于物（二）：利用velocity生成模板代码 | 大黄蜂的独立博客</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1259976017&web_id=1259976017" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大黄蜂的独立博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冰冻三尺非一日之寒</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://cppba.com/2016/07/19/java_tool_velocity_template/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大黄蜂">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://ooo.0o0.ooo/2017/06/08/59394f52af0e7.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大黄蜂的独立博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">java善假于物（二）：利用velocity生成模板代码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-19T16:26:00+08:00">
+                2016-07-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java善假于物/" itemprop="url" rel="index">
+                    <span itemprop="name">java善假于物</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2016/07/19/java_tool_velocity_template/" class="leancloud_visitors" data-flag-title="java善假于物（二）：利用velocity生成模板代码">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>不知道大家有没有这样的感觉，在平时开发中，经常有很多dao、service类中存着很多重复的代码，Velocity提供了模板生成工具，今天我教大家怎么和这些大量的重复代码说再见。</p>
+<a id="more"></a>
+<blockquote>
+<p>参考项目：<a href="https://github.com/bigbeef/cppba-codeTemplate" target="_blank" rel="noopener">https://github.com/bigbeef/cppba-codeTemplate</a><br>开源地址：<a href="https://github.com/bigbeef" target="_blank" rel="noopener">https://github.com/bigbeef</a><br>个人博客：<a href="http://blog.cppba.com" target="_blank" rel="noopener">http://blog.cppba.com</a></p>
+</blockquote>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>大家可以写适合自己的模板，这里为了演示，就直接拿cppba-web的模板来示范，至于velocity的语法大家可以找找度娘</p>
+<h2 id="maven配置"><a href="#maven配置" class="headerlink" title="maven配置"></a>maven配置</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">&lt;!-- velocity --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.velocity<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>velocity<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="创建模板文件"><a href="#创建模板文件" class="headerlink" title="创建模板文件"></a>创建模板文件</h2><p>首先看下目录结构：</p>
+<p><img src="https://i.loli.net/2017/08/20/599950fa89f2d.png" alt="https://github.com/bigbeef/cppba-codeTemplate"></p>
+<p>这里演示我就只贴出ServiceImplTemplate.java，需要其他模板代码可以到我github里面下载<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">#set ($domain = $!domainName.substring(0,1).toLowerCase()+$!domainName.substring(1))</span><br><span class="line"><span class="keyword">package</span> $!&#123;packageName&#125;.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> $!&#123;packageName&#125;.core.bean.PageEntity;</span><br><span class="line"><span class="keyword">import</span> $!&#123;packageName&#125;.dao.$!&#123;domainName&#125;Dao;</span><br><span class="line"><span class="keyword">import</span> $!&#123;packageName&#125;.dto.$!&#123;domainName&#125;Dto;</span><br><span class="line"><span class="keyword">import</span> $!&#123;packageName&#125;.dto.BaseDto;</span><br><span class="line"><span class="keyword">import</span> $!&#123;packageName&#125;.entity.$!&#123;domainName&#125;;</span><br><span class="line"><span class="keyword">import</span> $!&#123;packageName&#125;.service.$!&#123;domainName&#125;Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.Resource;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 开发者</span></span><br><span class="line"><span class="comment"> * nickName:大黄蜂</span></span><br><span class="line"><span class="comment"> * email:245655812@qq.com</span></span><br><span class="line"><span class="comment"> * github:https://github.com/bigbeef</span></span><br><span class="line"><span class="comment"> * velocity模板生成 cppba-codeTemplate</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> $!</span>&#123;domainName&#125;ServiceImpl implements $!&#123;domainName&#125;Service&#123;</span><br><span class="line">	<span class="meta">@Resource</span></span><br><span class="line">	<span class="keyword">private</span> $!&#123;domainName&#125;Dao $!&#123;domain&#125;Dao;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">($!&#123;domainName&#125; $!&#123;domain&#125;)</span> </span>&#123;</span><br><span class="line">		$!&#123;domain&#125;Dao.save($!&#123;domain&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">($!&#123;domainName&#125; $!&#123;domain&#125;)</span> </span>&#123;</span><br><span class="line">		$!&#123;domain&#125;Dao.delete($!&#123;domain&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">($!&#123;domainName&#125; $!&#123;domain&#125;)</span> </span>&#123;</span><br><span class="line">		$!&#123;domain&#125;Dao.update($!&#123;domain&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> $!&#123;domainName&#125; findById(<span class="keyword">int</span> id) &#123;</span><br><span class="line">		<span class="keyword">return</span> ($!&#123;domainName&#125;) $!&#123;domain&#125;Dao.get($!&#123;domainName&#125;<span class="class">.<span class="keyword">class</span>, <span class="title">id</span>)</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> PageEntity&lt;$!&#123;domainName&#125;&gt; query(BaseDto baseDto) &#123;</span><br><span class="line">		String hql = <span class="string">" select distinct $!&#123;domain&#125; from $!&#123;domainName&#125; $!&#123;domain&#125; where 1=1 "</span>;</span><br><span class="line">		Map params = <span class="keyword">new</span> HashMap&lt;String,Object&gt;();</span><br><span class="line"></span><br><span class="line">		$!&#123;domainName&#125;Dto $!&#123;domain&#125;Dto = ($!&#123;domainName&#125;Dto)baseDto;</span><br><span class="line">		$!&#123;domainName&#125; $!&#123;domain&#125; = $!&#123;domain&#125;Dto.get$!&#123;domainName&#125;();</span><br><span class="line">		<span class="keyword">int</span> page = $!&#123;domain&#125;Dto.getPage();</span><br><span class="line">		<span class="keyword">int</span> pageSize = $!&#123;domain&#125;Dto.getPageSize();</span><br><span class="line"></span><br><span class="line">		List list = $!&#123;domain&#125;Dao.query(hql,params,page,pageSize);</span><br><span class="line">		<span class="keyword">long</span> count = $!&#123;domain&#125;Dao.count(hql,params);</span><br><span class="line">		PageEntity&lt;$!&#123;domainName&#125;&gt; pe = <span class="keyword">new</span> PageEntity&lt;$!&#123;domainName&#125;&gt;();</span><br><span class="line">		pe.setCount(count);</span><br><span class="line">		pe.setList(list);</span><br><span class="line">		<span class="keyword">return</span> pe;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="模板生成"><a href="#模板生成" class="headerlink" title="模板生成"></a>模板生成</h2><p>接下来是生成模板的主函数：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.cppba.core;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.velocity.Template;</span><br><span class="line"><span class="keyword">import</span> org.apache.velocity.VelocityContext;</span><br><span class="line"><span class="keyword">import</span> org.apache.velocity.app.Velocity;</span><br><span class="line"><span class="keyword">import</span> org.apache.velocity.app.VelocityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedWriter;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStreamWriter;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 开发者</span></span><br><span class="line"><span class="comment"> * nickName:大黄蜂</span></span><br><span class="line"><span class="comment"> * email:245655812@qq.com</span></span><br><span class="line"><span class="comment"> * github:https://github.com/bigbeef</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> String domainName = <span class="string">"Articles"</span>; <span class="comment">//类名</span></span><br><span class="line">    <span class="keyword">static</span> String packageName = <span class="string">"com.cppba"</span>;<span class="comment">//类包</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> String templateDir = <span class="string">"\\src\\main\\webapp\\template\\"</span>;</span><br><span class="line">    <span class="keyword">static</span> String sourcePath = System.getProperty(<span class="string">"user.dir"</span>)+templateDir;</span><br><span class="line">    <span class="keyword">static</span> String resultDir = <span class="string">"\\out"</span>;</span><br><span class="line">    <span class="keyword">static</span> String targetPath = System.getProperty(<span class="string">"user.dir"</span>)</span><br><span class="line">            + resultDir + <span class="string">"\\"</span></span><br><span class="line">            + packageName.replace(<span class="string">"."</span>, <span class="string">"\\"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String,Object&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="string">"DaoTemplate.java"</span>,<span class="string">"dao/"</span> + domainName + <span class="string">"Dao.java"</span>);</span><br><span class="line">        map.put(<span class="string">"ServiceTemplate.java"</span>,<span class="string">"service/"</span> + domainName + <span class="string">"Service.java"</span>);</span><br><span class="line">        map.put(<span class="string">"ServiceImplTemplate.java"</span>,<span class="string">"service/impl/"</span> + domainName + <span class="string">"ServiceImpl.java"</span>);</span><br><span class="line">        map.put(<span class="string">"DtoTemplate.java"</span>,<span class="string">"dto/"</span> + domainName + <span class="string">"Dto.java"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(String templateFile:map.keySet())&#123;</span><br><span class="line">            String targetFile = (String) map.get(templateFile);</span><br><span class="line">            Properties pro = <span class="keyword">new</span> Properties();</span><br><span class="line">            pro.setProperty(Velocity.OUTPUT_ENCODING, <span class="string">"UTF-8"</span>);</span><br><span class="line">            pro.setProperty(Velocity.INPUT_ENCODING, <span class="string">"UTF-8"</span>);</span><br><span class="line">            pro.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, sourcePath);</span><br><span class="line">            VelocityEngine ve = <span class="keyword">new</span> VelocityEngine(pro);</span><br><span class="line"></span><br><span class="line">            VelocityContext context = <span class="keyword">new</span> VelocityContext();</span><br><span class="line">            context.put(<span class="string">"domainName"</span>,domainName);</span><br><span class="line">            context.put(<span class="string">"packageName"</span>,packageName);</span><br><span class="line"></span><br><span class="line">            Template t = ve.getTemplate(templateFile, <span class="string">"UTF-8"</span>);</span><br><span class="line"></span><br><span class="line">            File file = <span class="keyword">new</span> File(targetPath, targetFile);</span><br><span class="line">            <span class="keyword">if</span> (!file.getParentFile().exists())</span><br><span class="line">                file.getParentFile().mkdirs();</span><br><span class="line">            <span class="keyword">if</span> (!file.exists())</span><br><span class="line">                file.createNewFile();</span><br><span class="line"></span><br><span class="line">            FileOutputStream outStream = <span class="keyword">new</span> FileOutputStream(file);</span><br><span class="line">            OutputStreamWriter writer = <span class="keyword">new</span> OutputStreamWriter(outStream,</span><br><span class="line">                    <span class="string">"UTF-8"</span>);</span><br><span class="line">            BufferedWriter sw = <span class="keyword">new</span> BufferedWriter(writer);</span><br><span class="line">            t.merge(context, sw);</span><br><span class="line">            sw.flush();</span><br><span class="line">            sw.close();</span><br><span class="line">            outStream.close();</span><br><span class="line">            System.out.println(<span class="string">"成功生成Java文件:"</span></span><br><span class="line">                    + (targetPath + targetFile).replaceAll(<span class="string">"/"</span>, <span class="string">"\\\\"</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="生成java文件"><a href="#生成java文件" class="headerlink" title="生成java文件"></a>生成java文件</h2><p>我们可以修改domainName和packageName来修改我们的包名和类名，我们运行下看：</p>
+<p><img src="https://i.loli.net/2017/08/20/599950fac1e98.png" alt="https://github.com/bigbeef/cppba-codeTemplate"></p>
+<p>我们看到生成成功，我们打开ArticlesServiceImpl.java看下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.cppba.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.cppba.core.bean.PageEntity;</span><br><span class="line"><span class="keyword">import</span> com.cppba.dao.ArticlesDao;</span><br><span class="line"><span class="keyword">import</span> com.cppba.dto.ArticlesDto;</span><br><span class="line"><span class="keyword">import</span> com.cppba.dto.BaseDto;</span><br><span class="line"><span class="keyword">import</span> com.cppba.entity.Articles;</span><br><span class="line"><span class="keyword">import</span> com.cppba.service.ArticlesService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.Resource;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 开发者</span></span><br><span class="line"><span class="comment"> * nickName:大黄蜂</span></span><br><span class="line"><span class="comment"> * email:245655812@qq.com</span></span><br><span class="line"><span class="comment"> * github:https://github.com/bigbeef</span></span><br><span class="line"><span class="comment"> * velocity模板生成 cppba-codeTemplate</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArticlesServiceImpl</span> <span class="keyword">implements</span> <span class="title">ArticlesService</span></span>&#123;</span><br><span class="line">	<span class="meta">@Resource</span></span><br><span class="line">	<span class="keyword">private</span> ArticlesDao articlesDao;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">(Articles articles)</span> </span>&#123;</span><br><span class="line">		articlesDao.save(articles);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(Articles articles)</span> </span>&#123;</span><br><span class="line">		articlesDao.delete(articles);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(Articles articles)</span> </span>&#123;</span><br><span class="line">		articlesDao.update(articles);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Articles <span class="title">findById</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (Articles) articlesDao.get(Articles<span class="class">.<span class="keyword">class</span>, <span class="title">id</span>)</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> PageEntity&lt;Articles&gt; <span class="title">query</span><span class="params">(BaseDto baseDto)</span> </span>&#123;</span><br><span class="line">		String hql = <span class="string">" select distinct articles from Articles articles where 1=1 "</span>;</span><br><span class="line">		Map params = <span class="keyword">new</span> HashMap&lt;String,Object&gt;();</span><br><span class="line"></span><br><span class="line">		ArticlesDto articlesDto = (ArticlesDto)baseDto;</span><br><span class="line">		Articles articles = articlesDto.getArticles();</span><br><span class="line">		<span class="keyword">int</span> page = articlesDto.getPage();</span><br><span class="line">		<span class="keyword">int</span> pageSize = articlesDto.getPageSize();</span><br><span class="line"></span><br><span class="line">		List list = articlesDao.query(hql,params,page,pageSize);</span><br><span class="line">		<span class="keyword">long</span> count = articlesDao.count(hql,params);</span><br><span class="line">		PageEntity&lt;Articles&gt; pe = <span class="keyword">new</span> PageEntity&lt;Articles&gt;();</span><br><span class="line">		pe.setCount(count);</span><br><span class="line">		pe.setList(list);</span><br><span class="line">		<span class="keyword">return</span> pe;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生成成功，我们拷贝到cppba-web中可完美运行！</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java善假于物/" rel="tag"># java善假于物</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/18/java_tool_google_qrcode/" rel="next" title="java善假于物（一）：利用google提供jar生成二维码">
+                <i class="fa fa-chevron-left"></i> java善假于物（一）：利用google提供jar生成二维码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/03/java_tool_spring_quarz/" rel="prev" title="java善假于物（三）：quartz定时器融合spring">
+                java善假于物（三）：quartz定时器融合spring <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://ooo.0o0.ooo/2017/06/08/59394f52af0e7.jpg"
+               alt="大黄蜂" />
+          <p class="site-author-name" itemprop="name">大黄蜂</p>
+           
+              <p class="site-description motion-element" itemprop="description">java技术博客</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/bigbeef" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://crossoverjie.top/" title="crossoverjie" target="_blank">crossoverjie</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注意"><span class="nav-number">1.1.</span> <span class="nav-text">注意</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maven配置"><span class="nav-number">2.</span> <span class="nav-text">maven配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建模板文件"><span class="nav-number">3.</span> <span class="nav-text">创建模板文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板生成"><span class="nav-number">4.</span> <span class="nav-text">模板生成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成java文件"><span class="nav-number">5.</span> <span class="nav-text">生成java文件</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大黄蜂</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("50YD2Sj0yTcTBI3MQ4hk5d9c-gzGzoHsz", "xdQG9LVSnReOg4EMAdWGOjTR");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
